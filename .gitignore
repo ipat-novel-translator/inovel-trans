@@ -1,0 +1,46 @@
+# ======================
+# 🔒 Security & Secrets
+# ======================
+.env
+.env.local
+.env.*.local
+
+# Google Cloud Service Account Keys
+vertex-key.json
+novel-*.json
+*service-account*.json
+credentials.json
+*.key
+*.pem
+
+# ======================
+# 📁 Logs & Cache
+# ======================
+logs/
+backups/
+*.log
+translation_cache.db
+
+# ======================
+# 🐍 Python
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg

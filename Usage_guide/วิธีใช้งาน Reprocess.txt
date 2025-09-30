@@ -1,0 +1,47 @@
+✅ วิธีใช้งาน Reprocess.py
+=======================
+✅ 1. ตรวจสอบให้แน่ใจว่า:
+
+# อยู่ใน git repo
+git status
+# glossary.yaml ถูก track แล้ว
+git add glossary.yaml
+
+✅ 2. แปลบทแรกด้วย trans1.py → จะสร้างไฟล์แปล + metadata
+
+✅ 3. เมื่อแก้ glossary.yaml เสร็จ:
+
+git add glossary.yaml
+git commit -m "เปลี่ยน 'จางซาน' → 'จางเซียนเซิง'"
+
+✅ 4. รัน reprocess:
+
+python reprocess.py chapters_src/sa_0001.txt
+
+
+✅ ตัวอย่างผลลัพธ์
+
+[INFO] 🔍 เริ่ม reprocess บท: sa_0001
+[INFO] 🔄 มีการเปลี่ยนแปลง glossary ตั้งแต่ commit a1b2c3d
+[CHANGE] 🔧 พบ 2 คำที่เปลี่ยน: ['张三', '九阳神功']
+  [UPDATE] ประโยค 3: 张三修炼九阳神功 → จางเซียนเซิงฝึกศาสตร์กระบี่เก้ามังกร
+  [UPDATE] ประโยค 7: 张三大喝一声 → จางเซียนเซิงร้องเสียงดัง
+[SUCCESS] ✅ อัปเดตเสร็จสิ้น: chapters_translated/sa_0001_translated_updated.txt
+
+
+✅ สิ่งที่ได้
+---------------------
+ไม่สร้างไฟล์เวอร์ชันซ้ำ ✅ ใช้ git จัดการ
+ไม่เปลืองพื้นที่ ✅ เพราะ git บีบอัดอัตโนมัติ
+ย้อนกลับได้ ✅git checkout <commit> glossary.yaml
+ดู diff ได้ ✅git diff HEAD~1 glossary.yaml
+แปลเฉพาะที่จำเป็น ✅ Selective Retranslation
+ไม่พลาดบทที่ต้องอัปเดต ✅ metadata เก็บ commit ล่าสุดของ glossary
+(Metadata คือ รูปแบบโครงสร้างโฟลเดอร์)
+
+
+✅ อนาคต: ขยายเพิ่ม
+---------------------
+🔔 แจ้งเตือนเมื่อมีหลายบทต้อง reprocess
+📊 Dashboard แสดงบทไหน “ล้าสมัย”
+🤖 รันอัตโนมัติเมื่อ git push

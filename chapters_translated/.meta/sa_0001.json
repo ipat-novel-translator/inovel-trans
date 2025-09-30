@@ -1,0 +1,12 @@
+{
+  "timestamp": "20250929_221634",
+  "chapter": "sa_0001",
+  "source": "chapters_src\\sa_0001.txt",
+  "output": "chapters_translated\\sa_0001_translated.txt",
+  "glossary_matches": 0,
+  "candidates_extracted": 13,
+  "new_translations_added": 13,
+  "chunks": 2,
+  "duration_sec": 85.23,
+  "last_glossary_commit": "unknown"
+}
