@@ -1,78 +1,65 @@
 血脉神通:
   th: พลังสายเลือด
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 三长老:
   th: ผู้อาวุโสสาม
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: Manual
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 韩士奇:
-  th: ฮั่นซื่อฉี
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: อันซื่อฉี
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 云梦阁:
-  th: สำนักเมฆฝัน
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: สำนักเมฆาฝัน
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 江家镇:
-  th: เมืองตระกูลเจียง
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: เมืองเจียงเจีย
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 江啸天:
-  th: เจียงเซียวเทียน
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: เจียงเสี่ยวเทียน
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 天兽鼎:
-  th: หม้อสัตว์สวรรค์
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: เตาเทพอสูร
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 紫府境:
-  th: เขตสำนักม่วง
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: ผู้ฝึกตนตำหนักม่วง
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 玄幽境:
-  th: เขตลึกลับ
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: ผู้ฝึกตนมุกวิญญาณลี้ลับ
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 山海境:
-  th: เขตภูเขาและทะเล
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: ผู้ฝึกตนแก่นวิญญาณภูผามหาสมุทร
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 江寒:
-  th: เจียงฮั่น
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: เจียงหาน
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 江鲤:
-  th: เจียงลี่
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  th: เจียงหลี่
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
 江龙:
   th: เจียงหลง
-  chapter_first_seen: 1
-  added_at: '20250929_221517'
-  source_type: auto
+  source_type: manual
+  added_at: '20250930_222102'
   notes: ''
