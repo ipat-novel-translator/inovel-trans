@@ -1,84 +1,84 @@
 江家镇:
-  th: หมู่บ้านเจียง
+  th: เมืองเจียงเจีย
   chapter_first_seen: 1
-  added_at: '20251001_150731'
-  source_type: auto
-  notes: ''
-三长老:
-  th: ผู้อาวุโสสาม
-  chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: manual
   notes: ''
-云梦阁:
-  th: หอเมฆา
+三长老:
+  th: สามผู้อาวุโส
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
+  notes: ''
+云梦阁:
+  th: สำนักเมฆาฝัน
+  chapter_first_seen: 1
+  added_at: '20251001_184403'
+  source_type: manual
   notes: ''
 韩士奇:
   th: ฮั่นซื่อฉี
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 长老堂:
   th: หอผู้อาวุโส
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 紫府境:
   th: แดนปราสาทม่วง
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 玄幽境:
   th: แดนลึกลับ
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 山海境:
   th: แดนพสุธา
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 江啸天:
   th: เจียงเซี่ยวเทียน
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 天兽鼎:
   th: เจ้ายักษ์เทียน
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 江寒:
-  th: เสี่่ยวหาน
+  th: เจียงหาน
   chapter_first_seen: 1
-  added_at: '20251001_150731'
-  source_type: manual
+  added_at: '20251001_184403'
+  source_type: auto
   notes: ''
 江鲤:
   th: เจียงหลี่
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 江氏:
   th: ตระกูลเจียง
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
 江龙:
   th: เจียงหลง
   chapter_first_seen: 1
-  added_at: '20251001_150731'
+  added_at: '20251001_184403'
   source_type: auto
   notes: ''
