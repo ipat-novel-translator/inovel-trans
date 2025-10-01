@@ -89,10 +89,10 @@
   source_type: auto
   notes: ''
 一阶妖兽:
-  th: อสูรชั้นหนึ่ง
+  th: สัตว์อสูรระดับหนึ่ง
   chapter_first_seen: 2
   added_at: '20251001_202439'
-  source_type: auto
+  source_type: manual
   notes: ''
 狂暴之力:
   th: พลังอสูรคลั่ง
@@ -119,10 +119,10 @@
   source_type: auto
   notes: ''
 地龙兽:
-  th: อสูรพญามังกรดิน
+  th: มังกรปฐพี
   chapter_first_seen: 2
   added_at: '20251001_202439'
-  source_type: auto
+  source_type: manual
   notes: ''
 天香果:
   th: ผลเทียนเซียง
@@ -170,5 +170,29 @@
   th: วิชามาร
   chapter_first_seen: 2
   added_at: '20251001_202439'
+  source_type: auto
+  notes: ''
+血脉神通:
+  th: พลังวิเศษสายเลือด
+  chapter_first_seen: 2
+  added_at: '20251001_211332'
+  source_type: auto
+  notes: ''
+韩大人:
+  th: ท่านขุนนางฮัน
+  chapter_first_seen: 2
+  added_at: '20251001_211332'
+  source_type: auto
+  notes: ''
+大长老:
+  th: ผู้อาวุโสสูงสุด
+  chapter_first_seen: 2
+  added_at: '20251001_211332'
+  source_type: auto
+  notes: ''
+三叔:
+  th: อาซาน
+  chapter_first_seen: 2
+  added_at: '20251001_211332'
   source_type: auto
   notes: ''
