@@ -1,0 +1,16 @@
+{
+  "timestamp": "20251002_190803",
+  "chapter": "sa_0015",
+  "source": "chapters_src\\sa_0015.txt",
+  "output": "chapters_translated\\sa_0015_translated.txt",
+  "glossary_matches": 23,
+  "candidates_extracted": 0,
+  "new_translations_added": 0,
+  "chunks": 2,
+  "duration_sec": 59.07,
+  "last_glossary_commit": "82f5ba754939218d0134cb3a159689736b30c17b",
+  "model_used": [
+    "gemini-2.0-flash",
+    "gemini-2.5-flash"
+  ]
+}

@@ -43,4 +43,5 @@ sdist/
 var/
 *.egg-info/
 .installed.cfg
-*.egg
+*.egg"venv/" 
+"__pycache__/" 

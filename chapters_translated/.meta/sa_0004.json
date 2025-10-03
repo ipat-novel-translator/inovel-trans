@@ -1,15 +1,15 @@
 {
-  "timestamp": "20251001_184420",
-  "chapter": "sa_0001",
-  "source": "chapters_src\\sa_0001.txt",
-  "output": "chapters_translated\\sa_0001_translated.txt",
-  "glossary_matches": 0,
-  "candidates_extracted": 14,
-  "new_translations_added": 14,
-  "chunks": 3,
-  "duration_sec": 20.02,
+  "timestamp": "20251002_135358",
+  "chapter": "sa_0004",
+  "source": "chapters_src\\sa_0004.txt",
+  "output": "chapters_translated\\sa_0004_translated.txt",
+  "glossary_matches": 14,
+  "candidates_extracted": 11,
+  "new_translations_added": 11,
+  "chunks": 2,
+  "duration_sec": 91.66,
   "last_glossary_commit": "82f5ba754939218d0134cb3a159689736b30c17b",
-  "model_used": "gemini-2.5-flash-lite",
+  "model_used": "gemini-2.5-flash",
   "glossary_changes_applied": [
     "三阶妖兽",
     "不朽",
@@ -72,6 +72,5 @@
     "魔狼",
     "魔狼群"
   ],
-  "sentences_updated": 1,
-  "updated_at": "20251002_190054"
+  "updated_at": "20251002_190055"
 }

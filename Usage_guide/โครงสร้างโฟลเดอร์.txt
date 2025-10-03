@@ -1,0 +1,92 @@
+ในความคิดของฉัน
+เราน่าจะเปลี่ยนให้ระบบแปลเรื่องเดียวเป็นระบบแปลได้หลายเรื่องก่อน จากนั้นค่อยทำ main_gui.py
+
+โครงสร้างโฟลเดอร์ (เดิม)
+ip-trans/       			
+├── chapters_src/
+├── chapters_translated/
+|     └── .meta/
+├── reports/
+├── log/
+|    ├── new_terms/
+|    └── translation_cache.db
+├── backups/
+├── storage
+|    ├── data/
+|    └── temp/    
+├── venv/                  	
+├── ip-Trans.py
+├── ip-Trans.py
+├── reprocess.py
+├── reprocess_all_outdates.py
+├── .env
+├── .gitignore
+├── .pre-commit-config
+└── novel-473012-60da45253627.json (ข้อมูล vertex ai id)
+
+
+โครงสร้างโฟลเดอร์ (ที่น่าจะเป็น)
+ip-trans/
+├── novels/                          	
+│   ├── novel_A/            			
+│   │   ├── chapters_src/
+│   │   ├── chapters_translated/
+│   │   |     └── .meta/
+│   │   ├── reports/
+│   │   ├── log/
+│   │   |    ├── new_terms/
+│   │   |    └── translation_cache.db
+│   │   ├── backups/
+│   │   ├── storage
+│   │   |    ├── data/
+│   │   |    └── temp/
+│   │   └── glossary.yaml
+│   │
+│   ├── novel B/  						
+│   │   ├── chapters_src/
+│   │   ├── chapters_translated/
+│   │   |     └── .meta/
+│   │   ├── reports/
+│   │   ├── log/
+│   │   ├── backups/
+│   │   ├── storage/
+│   │   └── glossary.yaml
+│   │
+│   └── ...   
+├── venv/ 
+├── main_gui.py                      	
+├── ip-Trans.py
+├── ip-Trans.py
+├── reprocess.py
+├── reprocess_all_outdates.py
+├── .env
+├── .gitignore
+├── .pre-commit-config
+└── novel-473012-60da45253627.json (ข้อมูล vertex ai id)
+
+
+โครงสร้างโฟลเดอร์ที่คุณเสนอมาใหม่มีระบบ ip-Trans เป็นของตัวเอง
+
+ip-Trans/
+├── novel_A/      
+│   ├── chapters_src/  
+│   ├── chapters_translated/
+│   ├── glossary.yaml       
+│   ├── ip-Trans.py 
+│   ├── ip-Trans.py 
+│   ├── reprocess.py
+│   ├── reprocess_all_outdates.py
+│   └── ... 
+├── novel_B/               
+│   ├── chapters_src/  
+│   ├── chapters_translated/
+│   ├── glossary.yaml       
+│   ├── ip-Trans.py 
+│   ├── ip-Trans.py 
+│   ├── reprocess.py
+│   ├── reprocess_all_outdates.py
+│   └── ... 
+├── ...
+└── main_gui.py            ← ✅ GUI รวม (อยู่ที่ root)
+
+

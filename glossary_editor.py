@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 glossary_editor.py - GUI สำหรับแก้ไข glossary.yaml + กรองตามวัน/บท
-เวอร์ชันที่รองรับ Flet 0.28.3+
+เวอร์ชันที่รองรับ Flet 0.28.3+ และแก้ไขปัญหา source_type ถูกเปลี่ยนทั้งหมด
 """
 
 import flet as ft
@@ -35,18 +35,23 @@ def load_glossary():
             original_glossary_metadata.clear()
             for k, v in data.items():
                 if isinstance(v, dict):
-                    simple[k] = v["th"]
+                    simple[k] = v.get("th", k)
+                    added_at = v.get("added_at", "")
+                    if not added_at:
+                        added_at = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                     original_glossary_metadata[k] = {
-                        "added_at": v.get("added_at", ""),
+                        "added_at": added_at,
                         "chapter_first_seen": v.get("chapter_first_seen"),
-                        "source_type": v.get("source_type")
+                        "source_type": v.get("source_type", "manual"),
+                        "notes": v.get("notes", "")
                     }
                 elif isinstance(v, str):
                     simple[k] = v
                     original_glossary_metadata[k] = {
-                        "added_at": "",
+                        "added_at": datetime.datetime.now().strftime("%Y%m%d_%H%M%S"),
                         "chapter_first_seen": None,
-                        "source_type": "auto"
+                        "source_type": "manual",
+                        "notes": ""
                     }
             return simple
         except Exception as e:
@@ -55,31 +60,39 @@ def load_glossary():
 
 
 # ---------------------------
-# บันทึก glossary.yaml (โครงสร้างเต็ม)
+# บันทึก glossary.yaml (เวอร์ชันปลอดภัย)
 # ---------------------------
-def save_glossary( dict):
-    full_data = {}
+def save_glossary(new_data: dict): 
+    """
+    บันทึกเฉพาะคำที่อยู่ใน new_data
+    โดยรักษาคำอื่นจากไฟล์เดิม
+    """
+    # โหลดไฟล์เดิม
+    original_data = {}
+    if os.path.exists(GLOSSARY_FILE):
+        with open(GLOSSARY_FILE, "r", encoding="utf-8") as f:
+            original_data = yaml.safe_load(f) or {}
+    
+    # เริ่มจากข้อมูลเดิม
+    full_data = original_data.copy()
+    
     now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    for hanzi, thai in data.items():
-        if hanzi in full_data:
-            if isinstance(full_data[hanzi], dict):
-                full_data[hanzi]["th"] = thai
-                full_data[hanzi]["added_at"] = now
-            else:
-                full_data[hanzi] = {
-                    "th": thai,
-                    "source_type": "manual",
-                    "added_at": now,
-                    "notes": ""
-                }
+    
+    # อัปเดตหรือเพิ่มคำใหม่
+    for hanzi, thai in new_data.items():
+        if hanzi in full_data and isinstance(full_data[hanzi], dict):
+            # อัปเดต dict เดิม
+            full_data[hanzi]["th"] = thai
+            full_data[hanzi]["source_type"] = "manual"
         else:
+            # สร้างใหม่
             full_data[hanzi] = {
                 "th": thai,
                 "source_type": "manual",
                 "added_at": now,
                 "notes": ""
             }
-
+    
     with open(GLOSSARY_FILE, "w", encoding="utf-8") as f:
         yaml.dump(full_data, f, allow_unicode=True, sort_keys=False, indent=2)
 
@@ -115,15 +128,12 @@ def main(page: ft.Page):
     page.window_height = 800
     page.scroll = "auto"
 
-    # --- ประกาศตัวแปรสำคัญก่อน ---
     page.edit_container = ft.Column(spacing=5)
     entries = []
     visible_rows = []
 
-    # --- โหลดข้อมูล ---
     original_glossary = load_glossary()
 
-    # --- ช่องค้นหา ---
     search_field = ft.TextField(
         label="ค้นหาคำศัพท์",
         width=250,
@@ -131,150 +141,203 @@ def main(page: ft.Page):
         on_change=lambda e: filter_entries(),
     )
 
-    # --- ตัวกรองวันที่ ---
-    date_picker = ft.DatePicker(
-        on_change=lambda e: update_date_label_and_filter(),
-        on_dismiss=lambda e: print("ปิดตัวเลือกวัน")
-    )
-    page.overlay.append(date_picker)
+    # --- วันที่: จาก ... ถึง ... ---
+    start_date_picker = ft.DatePicker(on_change=lambda e: update_date_filters())
+    end_date_picker = ft.DatePicker(on_change=lambda e: update_date_filters())
+    page.overlay.extend([start_date_picker, end_date_picker])
 
-    def update_date_label_and_filter():
-        if date_picker.value:
-            selected_date.value = date_picker.value.strftime("%Y-%m-%d")
+    start_date_field = ft.TextField(
+        label="วันที่เริ่ม",
+        width=120,
+        dense=True,
+        read_only=True,
+        on_click=lambda e: page.open(start_date_picker),
+        hint_text="คลิกเลือก"
+    )
+    end_date_field = ft.TextField(
+        label="วันที่สิ้นสุด",
+        width=120,
+        dense=True,
+        read_only=True,
+        on_click=lambda e: page.open(end_date_picker),
+        hint_text="คลิกเลือก"
+    )
+
+    def update_date_filters():
+        if start_date_picker.value:
+            start_date_field.value = start_date_picker.value.strftime("%Y-%m-%d")
         else:
-            selected_date.value = "ทุกวัน"
+            start_date_field.value = ""
+        if end_date_picker.value:
+            end_date_field.value = end_date_picker.value.strftime("%Y-%m-%d")
+        else:
+            end_date_field.value = ""
         filter_entries()
 
-    date_button = ft.ElevatedButton(
-        "เลือกวัน",
-        icon=ft.Icons.CALENDAR_TODAY,
-        on_click=lambda e: page.open(date_picker),  # ✅ แก้ตรงนี้
-        style=ft.ButtonStyle(padding=10)
+    # --- บท: จาก ... ถึง ... ---
+    chapter_from = ft.TextField(
+        label="บทเริ่ม",
+        width=80,
+        dense=True,
+        text_align="center",
+        on_change=lambda e: filter_entries()
     )
-    selected_date = ft.Text("ทุกวัน", size=13, italic=True, color=ft.Colors.GREY)
-
-    # --- ตัวกรองบทที่ ---
-    chapter_filter = ft.TextField(
-        label="บท",
+    chapter_to = ft.TextField(
+        label="บทสิ้นสุด",
         width=80,
         dense=True,
         text_align="center",
         on_change=lambda e: filter_entries()
     )
 
-    # --- ปุ่มเพิ่มแถวใหม่ (ประกาศก่อนใช้!) ---
     add_button = ft.ElevatedButton(
         "➕ เพิ่มคำใหม่",
         on_click=lambda e: add_entry(),
         style=ft.ButtonStyle(color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE)
     )
 
-    # --- กลุ่มควบคุมตัวกรอง ---
     filter_row = ft.Row([
         search_field,
-        ft.Container(width=20),
-        date_button,
-        selected_date,
-        ft.Container(width=20),
-        chapter_filter,
-        ft.Container(width=20),
-        add_button  # ✅ ตอนนี้ add_button ถูกประกาศแล้ว
-    ], vertical_alignment=ft.CrossAxisAlignment.CENTER)
+        ft.Container(width=10),
+        start_date_field,
+        ft.Text("ถึง", size=13, color=ft.Colors.GREY),
+        end_date_field,
+        ft.Container(width=10),
+        chapter_from,
+        ft.Text("ถึง", size=13, color=ft.Colors.GREY),
+        chapter_to,
+        ft.Container(width=10),
+        add_button
+    ], vertical_alignment=ft.CrossAxisAlignment.CENTER, wrap=True)
 
-    # --- ฟังก์ชันกรอง ---
     def filter_entries():
         query = search_field.value.lower() if search_field.value else ""
-        
-        # ตรวจสอบวันที่
-        target_date = ""
-        if hasattr(date_picker, "value") and date_picker.value:
-            target_date = date_picker.value.strftime("%Y%m%d")
 
-        # ตรวจสอบบทที่
-        chapter_query = chapter_filter.value.strip()
-        target_chapter = int(chapter_query) if chapter_query.isdigit() else None
+        # แปลงวันที่เริ่ม-สิ้นสุด เป็นรูปแบบ "YYYYMMDD"
+        start_str = start_date_picker.value.strftime("%Y%m%d") if start_date_picker.value else None
+        end_str = end_date_picker.value.strftime("%Y%m%d") if end_date_picker.value else None
+
+        # แปลงบทเริ่ม-สิ้นสุด เป็น int
+        try:
+            chap_from = int(chapter_from.value) if chapter_from.value.strip().isdigit() else None
+        except:
+            chap_from = None
+        try:
+            chap_to = int(chapter_to.value) if chapter_to.value.strip().isdigit() else None
+        except:
+            chap_to = None
 
         page.edit_container.controls.clear()
-
         for row in entries:
-            hanzi = row.controls[0].value.strip()
-            thai = row.controls[1].value.strip()
-            
-            # ดึง metadata
-            entry_data = original_glossary_metadata.get(hanzi, {})
+            hanzi = row.data["hanzi_field"].value.strip()
+            thai = row.data["thai_field"].value.strip()
+            meta = original_glossary_metadata.get(hanzi, {})
+            added_at = meta.get("added_at", "")  # เช่น "20250405_123456"
+            chapter_seen = meta.get("chapter_first_seen")  # อาจเป็น int หรือ None
 
-            added_at = entry_data.get("added_at", "")
-            chapter_seen = entry_data.get("chapter_first_seen")
-
-            # เงื่อนไขการกรอง
+            # กรองตามคำค้น
             matches_search = not query or query in hanzi.lower() or query in thai.lower()
-            matches_date = not target_date or target_date in added_at
-            matches_chapter = target_chapter is None or chapter_seen == target_chapter
+
+            # กรองตามช่วงวันที่
+            matches_date = True
+            if added_at and len(added_at) >= 8:
+                entry_date = added_at[:8]  # "20250405"
+                if start_str and entry_date < start_str:
+                    matches_date = False
+                if end_str and entry_date > end_str:
+                    matches_date = False
+            else:
+                if start_str or end_str:
+                    matches_date = False
+
+            # กรองตามช่วงบท
+            matches_chapter = True
+            if chapter_seen is not None:
+                if chap_from is not None and chapter_seen < chap_from:
+                    matches_chapter = False
+                if chap_to is not None and chapter_seen > chap_to:
+                    matches_chapter = False
+            else:
+                if chap_from is not None or chap_to is not None:
+                    matches_chapter = False
 
             if matches_search and matches_date and matches_chapter:
                 page.edit_container.controls.append(row)
 
         page.update()
 
-    # --- ฟังก์ชัน: เพิ่มแถวใหม่ ---
     def add_entry(hanzi="", thai=""):
-        row = ft.ResponsiveRow(
-            columns=12,
-            controls=[
-                ft.TextField(
-                    value=hanzi,
-                    col={"sm": 4},
-                    dense=True,
-                    height=40,
-                    text_size=16,
-                    bgcolor=ft.Colors.GREY_100
-                ),
-                ft.TextField(
-                    value=thai,
-                    col={"sm": 7},
-                    dense=True,
-                    height=40,
-                    text_size=16,
-                    bgcolor=ft.Colors.WHITE
-                ),
-                ft.IconButton(
-                    icon=ft.Icons.DELETE_OUTLINE,
-                    on_click=lambda e: delete_entry(row),
-                    tooltip="ลบ",
-                    icon_color=ft.Colors.RED_400
-                )
-            ]
+        hanzi_field = ft.TextField(
+            value=hanzi,
+            expand=2,
+            dense=True,
+            height=40,
+            text_size=16,
+            bgcolor=ft.Colors.GREY_100
         )
+        thai_field = ft.TextField(
+            value=thai,
+            expand=5,
+            dense=True,
+            height=40,
+            text_size=16,
+            bgcolor=ft.Colors.WHITE
+        )
+        delete_btn = ft.IconButton(
+            icon=ft.Icons.DELETE_OUTLINE,
+            icon_size=18,  # เล็กลง
+            on_click=lambda e: delete_entry(row),
+            tooltip="ลบ",
+            icon_color=ft.Colors.RED_400,
+            padding=4  # ลด padding
+        )
+
+        # ใช้ Row แทน ResponsiveRow เพื่อควบคุม layout ได้ดีขึ้น
+        row = ft.Row(
+            controls=[
+                hanzi_field,
+                ft.Container(width=10),
+                thai_field,
+                ft.Container(width=5),
+                delete_btn
+            ],
+            alignment=ft.MainAxisAlignment.START,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=0
+        )
+        # เก็บ reference ไว้ใน row.data เพื่อเข้าถึงค่าได้ง่าย
+        row.data = {"hanzi_field": hanzi_field, "thai_field": thai_field}
+
         entries.append(row)
-        if search_field.value == "" and (not chapter_filter.value) and (not hasattr(date_picker, "value")):
+        # แสดงทันทีถ้ายังไม่มีการกรอง
+        if not search_field.value and not start_date_picker.value and not end_date_picker.value and not chapter_from.value and not chapter_to.value:
             page.edit_container.controls.append(row)
         page.update()
 
     def delete_entry(row):
         entries.remove(row)
-        page.edit_container.controls.remove(row)
+        if row in page.edit_container.controls:
+            page.edit_container.controls.remove(row)
         page.update()
 
-    # --- เพิ่มแถวจากข้อมูลเดิม ---
     for k, v in original_glossary.items():
         add_entry(k, v)
 
-    # --- ปุ่มบันทึก ---
     status_label = ft.Text("", size=14, color=ft.Colors.GREY)
 
     def save_clicked(e):
         new_data = {}
         errors = []
         for row in entries:
-            hanzi_field = row.controls[0]
-            thai_field = row.controls[1]
-            hanzi = hanzi_field.value.strip()
-            thai = thai_field.value.strip()
+            hanzi = row.data["hanzi_field"].value.strip()
+            thai = row.data["thai_field"].value.strip()
             if hanzi:
-                if hanzi in new_data:
-                    errors.append(f"ซ้ำ: {hanzi}")
-                else:
-                    new_data[hanzi] = thai
+                original_val = original_glossary.get(hanzi)
+                if original_val != thai:
+                    if hanzi in new_data:
+                        errors.append(f"ซ้ำ: {hanzi}")
+                    else:
+                        new_data[hanzi] = thai
             elif thai:
                 errors.append(f"มีคำไทยแต่ไม่มีคำจีน: {thai}")
 
@@ -292,7 +355,6 @@ def main(page: ft.Page):
         except Exception as e:
             status_label.value = f"❌ บันทึกไม่สำเร็จ: {str(e)}"
             status_label.color = ft.Colors.RED
-
         page.update()
 
     save_button = ft.ElevatedButton(
@@ -301,7 +363,6 @@ def main(page: ft.Page):
         style=ft.ButtonStyle(color=ft.Colors.WHITE, bgcolor=ft.Colors.GREEN)
     )
 
-    # --- จัดวางหน้าจอ ---
     page.add(
         ft.Text("แก้ไขพจนานุกรมศัพท์นิยายไซ่เซียน", size=24, weight=ft.FontWeight.BOLD),
         ft.Divider(),
@@ -314,8 +375,5 @@ def main(page: ft.Page):
     )
 
 
-# ---------------------------
-# เริ่มต้นแอป
-# ---------------------------
 if __name__ == "__main__":
     ft.app(target=main)

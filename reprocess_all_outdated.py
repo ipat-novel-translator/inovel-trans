@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
 """
 reprocess_all_outdated.py - ตรวจสอบ, อัปเดต, และทำความสะอาดรายงานเก่าอัตโนมัติ
+เวอร์ชันที่รองรับการรายงานคำที่เปลี่ยนจริง (หลังอัปเดต reprocess.py)
+รองรับกรณีที่ไม่มีการเปลี่ยนแปลง → ไม่สร้างไฟล์ _updated.txt
 """
 
 import os
+import sys
+import io
 import json
 import subprocess
 import argparse
 import datetime
 from pathlib import Path
 
+
+# ---------------------------
+# บังคับใช้ UTF-8 บน Windows
+# ---------------------------
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # ---------------------------
 # Configuration
@@ -96,11 +107,11 @@ def find_all_chapters() -> list:
 def reprocess_single(chapter_path: str, dry_run: bool = False) -> tuple:
     try:
         if dry_run:
-            print(f"[DRY-RUN] python reprocess.py {chapter_path}")
+            print(f"[DRY-RUN] {sys.executable} reprocess.py {chapter_path}")
             return True, None, None, []
 
         result = subprocess.run(
-            ["python", "reprocess.py", chapter_path],
+            [sys.executable, "reprocess.py", chapter_path],
             capture_output=True, text=True
         )
 
@@ -111,6 +122,16 @@ def reprocess_single(chapter_path: str, dry_run: bool = False) -> tuple:
         chapter_name = Path(chapter_path).stem
         old_path = os.path.join(OUT_DIR, f"{chapter_name}_translated.txt")
         new_path = os.path.join(OUT_DIR, f"{chapter_name}_translated_updated.txt")
+
+        # ✅ ตรวจสอบว่าไฟล์มีอยู่จริงก่อนอ่าน
+        if not os.path.exists(old_path):
+            print(f"[WARNING] ไม่พบบทแปลเดิมสำหรับ {chapter_name}")
+            return False, None, None, []
+
+        # ถ้าไม่มีไฟล์ updated → ถือว่าไม่มีการเปลี่ยนแปลง
+        if not os.path.exists(new_path):
+            print(f"[INFO] ไม่มีการเปลี่ยนแปลงสำหรับ {chapter_name} (ไม่มีไฟล์ updated)")
+            return True, old_path, None, []  # new_path = None
 
         changes = []
         meta_path = os.path.join(META_DIR, f"{chapter_name}.json")
@@ -191,9 +212,6 @@ def save_diff_report(report_data: list, output_path: str):
 # ✅ Auto Cleanup: ลบรายงานเก่าเกิน N วัน
 # ---------------------------
 def cleanup_old_reports(keep_days: int = 30):
-    """
-    ลบไฟล์ใน reports/ ที่ขึ้นต้นด้วย 'diff_report_' และเก่ากว่า keep_days วัน
-    """
     now = datetime.datetime.now()
     cutoff = now - datetime.timedelta(days=keep_days)
     deleted_count = 0
@@ -205,7 +223,6 @@ def cleanup_old_reports(keep_days: int = 30):
         if file.startswith("diff_report_") and file.endswith(".html"):
             path = os.path.join(REPORTS_DIR, file)
             try:
-                # พยายามดึง timestamp จากชื่อไฟล์: diff_report_YYYYMMDD_HHMMSS.html
                 timestamp_str = file[13:27]  # YYYYMMDD_HHMMSS
                 file_time = datetime.datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
                 if file_time < cutoff:
@@ -249,40 +266,50 @@ def main():
     print(f"[INFO] พบ {len(chapters)} บท กำลังตรวจสอบ...")
 
     for ch in chapters:
-        meta = load_metadata(ch["name"])
+        chapter_name = ch["name"]
+        old_trans_path = os.path.join(OUT_DIR, f"{chapter_name}_translated.txt")
+        
+        # ✅ ข้ามบทที่ยังไม่ได้แปล
+        if not os.path.exists(old_trans_path):
+            print(f"[SKIP] ยังไม่ได้แปล: {chapter_name}")
+            continue
+
+        meta = load_metadata(chapter_name)
         last_commit = meta.get("last_glossary_commit")
         should_update = args.force or not last_commit or has_glossary_changed_since(last_commit)
 
         if should_update:
-            outdated.append(ch["name"])
-            print(f"[🔄 OUTDATED] {ch['name']}")
+            outdated.append(chapter_name)
+            print(f"[🔄 OUTDATED] {chapter_name}")
 
             if not args.dry_run:
                 success, old_path, new_path, changes = reprocess_single(ch["path"])
-                if success and os.path.exists(old_path) and os.path.exists(new_path):
+                if success and new_path:  # ✅ มีการเปลี่ยนแปลงจริง
                     with open(old_path, "r", encoding="utf-8") as f:
                         old_text = f.read()
                     with open(new_path, "r", encoding="utf-8") as f:
                         new_text = f.read()
-                    diff_html = create_diff_html(old_text, new_text, ch["name"])
+                    diff_html = create_diff_html(old_text, new_text, chapter_name)
                     diff_report_data.append({
-                        "chapter": ch["name"],
+                        "chapter": chapter_name,
                         "diff_html": diff_html,
                         "changes": changes
                     })
-                    updated.append(ch["name"])
+                    updated.append(chapter_name)
+                elif success:
+                    # ไม่มีการเปลี่ยนแปลง → นับเป็นสำเร็จแต่ไม่สร้าง diff
+                    print(f"[✅ NO CHANGE] {chapter_name}")
+                    updated.append(chapter_name)
                 else:
-                    errors[ch["name"]] = "reprocess failed or files missing"
+                    errors[chapter_name] = "reprocess failed or files missing"
         else:
-            print(f"[✅ UP-TO-DATE] {ch['name']}")
+            print(f"[✅ UP-TO-DATE] {chapter_name}")
 
-    # --- สร้างรายงาน + ลบไฟล์เก่า ---
     if diff_report_data and not args.dry_run:
         report_path = f"reports/diff_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         save_diff_report(diff_report_data, report_path)
-        cleanup_old_reports(keep_days=30)  # ✅ ลบรายงานเก่าเกิน 30 วัน
+        cleanup_old_reports(keep_days=30)
 
-    # --- สรุป ---
     print("\n" + "="*60)
     print("📋 สรุปการอัปเดตบทแปล")
     print("="*60)
