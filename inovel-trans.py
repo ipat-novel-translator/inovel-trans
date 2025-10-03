@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ip-Trans.py - ระบบแปลนิยายจีนเป็นไทยอัจฉริยะ
+inovel-trans.py - ระบบแปลนิยายจีนเป็นไทยอัจฉริยะ
 รองรับ: Gemini 2.5 Flash/Pro + Fallback + .env + metadata
 """
 
@@ -819,17 +819,17 @@ def main():
         epilog="""
 Examples:
   # แปลบทเดียว
-  python ip-Trans.py chapters_src/sa_0001.txt
+  python inovel-trans.py chapters_src/sa_0001.txt
 
   # แปลหลายบท
-  python ip-Trans.py --range 1 10
-  python ip-Trans.py --range 1 50 --prefix novel
+  python inovel-trans.py --range 1 10
+  python inovel-trans.py --range 1 50 --prefix novel
 
   # แปลแบบข้ามบทที่แปลแล้ว
-  python ip-Trans.py --range 1 100 --skip-existing
+  python inovel-trans.py --range 1 100 --skip-existing
 
   # ระบุไฟล์เอง
-  python ip-Trans.py --files chapters_src/sa_0001.txt chapters_src/sa_0005.txt
+  python inovel-trans.py --files chapters_src/sa_0001.txt chapters_src/sa_0005.txt
         """
     )
     # โหมดเดียว (ยังรองรับ)
